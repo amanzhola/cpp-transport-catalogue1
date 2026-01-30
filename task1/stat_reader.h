@@ -1,3 +1,4 @@
+// stat_reader.h
 #pragma once
 
 #include <iosfwd>
@@ -5,10 +6,6 @@
 
 #include "transport_catalogue.h"
 
-namespace tc::io {
-
-void ParseAndPrintStat(const tc::catalogue::TransportCatalogue& catalogue,
-                       std::string_view request,
+void ParseAndPrintStat(const TransportCatalogue& transport_catalogue, std::string_view request,
                        std::ostream& output);
 
-}  // namespace tc::io
