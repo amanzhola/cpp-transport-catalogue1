@@ -40,8 +40,8 @@ struct StrViewHasher {
 // ----- Каталог -----
 class TransportCatalogue {
 public:
-    void AddStop(std::string name, geo::Coordinates coord);
-    void AddBus (std::string name, const std::vector<std::string_view>& stop_names);
+    void AddStop(const std::string& name, geo::Coordinates coord); // см -> cpp
+    void AddBus (const std::string& name, const std::vector<std::string_view>& stop_names); // см -> cpp
 
     const domain::Stop* FindStop(std::string_view name) const;
     const domain::Bus*  FindBus (std::string_view name) const;
