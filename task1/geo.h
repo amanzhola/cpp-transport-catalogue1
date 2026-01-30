@@ -1,13 +1,11 @@
+// geo.h
 #pragma once
 
 #include <cmath>
 
-namespace tc::geo {
-
 struct Coordinates {
-    double lat = 0.0;
-    double lng = 0.0;
-
+    double lat;
+    double lng;
     bool operator==(const Coordinates& other) const {
         return lat == other.lat && lng == other.lng;
     }
@@ -17,21 +15,12 @@ struct Coordinates {
 };
 
 inline double ComputeDistance(Coordinates from, Coordinates to) {
+    using namespace std;
     if (from == to) {
-        return 0.0;
+        return 0;
     }
-
-    static constexpr double kPi = 3.1415926535;
-    static constexpr double kEarthRadius = 6371000.0;
-    static constexpr double kDegToRad = kPi / 180.0;
-
-    const double lat1 = from.lat * kDegToRad;
-    const double lat2 = to.lat * kDegToRad;
-    const double d_lng = std::abs(from.lng - to.lng) * kDegToRad;
-
-    return std::acos(std::sin(lat1) * std::sin(lat2)
-                   + std::cos(lat1) * std::cos(lat2) * std::cos(d_lng))
-         * kEarthRadius;
+    static const double dr = 3.1415926535 / 180.;
+    return acos(sin(from.lat * dr) * sin(to.lat * dr)
+                + cos(from.lat * dr) * cos(to.lat * dr) * cos(abs(from.lng - to.lng) * dr))
+        * 6371000;
 }
-
-}  // namespace tc::geo
