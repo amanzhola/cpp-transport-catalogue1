@@ -1,49 +1,36 @@
+// stat_reader.cpp
+/*
+#include "stat_reader.h"
+
+void ParseAndPrintStat(const TransportCatalogue& tansport_catalogue, std::string_view request,
+                       std::ostream& output) {
+    // Реализуйте самостоятельно
+}
+*/
 #include "stat_reader.h"
 
 #include <iomanip>
 #include <iostream>
 #include <string_view>
 
-namespace {
-
-#ifdef TC_VERBOSE
-#define TC_LOG(x) do { std::cerr << x << '\n'; } while(false)
-#else
-#define TC_LOG(x) do {} while(false)
-#endif
-
-}  // namespace
-
-namespace tc::io {
-
-void ParseAndPrintStat(const tc::catalogue::TransportCatalogue& catalogue,
-                       std::string_view request,
-                       std::ostream& output) {
-    // Поддерживаем только "Bus X"
-    const std::size_t sp = request.find(' ');
-    if (sp == request.npos || request.substr(0, sp) != "Bus") {
-        return;
+void ParseAndPrintStat(const TransportCatalogue& db, std::string_view req, std::ostream& out) {
+    // ожидаем формат: "Bus <имя_маршрута>"
+    const auto sp = req.find(' ');
+    if (sp == req.npos || std::string_view(req.data(), sp) != std::string_view("Bus")) {
+        return; // в этой части поддерживаем только Bus
     }
 
-    const std::string_view bus_name = request.substr(sp + 1);
-    TC_LOG("🔎 Stat request: Bus '" << bus_name << "'");
+    std::string_view bus_name = req.substr(sp + 1);
 
-    const auto stat = catalogue.GetBusStat(bus_name);
+    const auto stat = db.GetBusStat(bus_name);
 
-    output << "Bus " << bus_name << ": ";
+    out << "Bus " << bus_name << ": ";
     if (!stat.found) {
-        output << "not found\n";
-        TC_LOG("❌ Not found");
+        out << "not found\n";
         return;
     }
 
-    output << stat.stops_count << " stops on route, "
-           << stat.unique_stops << " unique stops, "
-           << std::setprecision(6) << stat.route_length << " route length\n";
-
-    TC_LOG("✅ Found: R=" << stat.stops_count
-          << " U=" << stat.unique_stops
-          << " L=" << std::setprecision(6) << stat.route_length);
+    out << stat.stops_count << " stops on route, "
+        << stat.unique_stops << " unique stops, "
+        << std::setprecision(6) << stat.route_length << " route length\n";
 }
-
-}  // namespace tc::io
