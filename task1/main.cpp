@@ -1,57 +1,121 @@
+// main.cpp
 #include <iostream>
 #include <string>
 
-#include "transport_catalogue.h"
+#include <fstream>
+#include <limits>
+#include <cctype>
+#include <iomanip> // для setprecision(6)
+
 #include "input_reader.h"
 #include "stat_reader.h"
 
-#ifdef TC_RENDER_MAP
+#ifdef INTERACTIVE
 #include "map_renderer.h"
 #endif
 
-static bool IsBlankLine(const std::string& s) {
-    for (char c : s) {
-        if (c != ' ' && c != '\t' && c != '\r') return false;
+using namespace std;
+
+int main(int argc, char** argv) {
+    TransportCatalogue catalogue;
+
+    // ---------- Источник ввода базы ----------
+    istream* input = &cin;
+    ifstream fin;
+
+#ifdef INTERACTIVE
+    // В интерактивном режиме база может читаться из файла:
+    // запуск: transport_catalogue.exe input.txt
+    if (argc >= 2) {
+        fin.open(argv[1]);
+        if (!fin) {
+            cout << "Cannot open file: " << argv[1] << "\n";
+            return 1;
+        }
+        input = &fin;
     }
-    return true;
-}
-
-int main() {
-    using namespace std;
-
-    tc::catalogue::TransportCatalogue catalogue;
-    tc::io::InputReader reader;
-
-    int base_requests = 0;
-    cin >> base_requests;
-
-    string line;
-    getline(cin, line); // съесть '\n' после числа
-
-    // читаем ровно base_requests команд, пустые строки НЕ считаем
-    for (int got = 0; got < base_requests && getline(cin, line); ) {
-        if (IsBlankLine(line)) continue;
-        reader.ParseLine(line);
-        ++got;
-    }
-
-    reader.ApplyCommands(catalogue);
-
-#ifdef TC_RENDER_MAP
-    tc::render::RenderMapSvg(catalogue, cout);
-    return 0;
-#else
-    int stat_requests = 0;
-    cin >> stat_requests;
-    getline(cin, line);
-
-    tc::io::StatReader stat_reader(catalogue);
-
-    for (int got = 0; got < stat_requests && getline(cin, line); ) {
-        if (IsBlankLine(line)) continue;
-        stat_reader.ParseAndPrintLine(line, cout);
-        ++got;
-    }
-    return 0;
 #endif
+
+    // ---------- Чтение и применение запросов базы ----------
+    int base_request_count = 0;
+    (*input) >> base_request_count >> ws;
+
+    {
+        InputReader reader;
+        for (int i = 0; i < base_request_count; ++i) {
+            string line;
+            getline(*input, line);
+            reader.ParseLine(line);
+        }
+        reader.ApplyCommands(catalogue);
+    }
+
+#ifndef INTERACTIVE
+    // ---------- Обычный режим (как в задании): читаем stat-запросы из input ----------
+    int stat_request_count = 0;
+    (*input) >> stat_request_count >> ws;
+
+    for (int i = 0; i < stat_request_count; ++i) {
+        string line;
+        getline(*input, line);
+        ParseAndPrintStat(catalogue, line, cout);
+    }
+#else
+    // -------- Интерактивный режим: показываем Bus-статистику и принимаем имя маршрута --------
+    const auto& buses = catalogue.GetAllBuses();
+
+    cout << "Found routes: " << buses.size() << "\n\n";
+    if (buses.empty()) {
+        cout << "No routes to show.\n";
+        return 0;
+    }
+
+    // Печатаем список маршрутов в формате как в задании + порядковый номер
+    for (size_t i = 0; i < buses.size(); ++i) {
+        const auto* bus = buses[i];
+        const auto stat = catalogue.GetBusStat(bus->name);
+
+        cout << (i + 1) << ") "
+             << "Bus " << bus->name << ": "
+             << stat.stops_count << " stops on route, "
+             << stat.unique_stops << " unique stops, "
+             << setprecision(6) << stat.route_length << " route length\n";
+    }
+
+    auto MakeSafeFilename = [](string s) {
+        for (char& ch : s) {
+            if (ch == ' ') ch = '_';   // чтобы удобно было в Windows
+        }
+        return s;
+    };
+
+    while (true) {
+        cout << "\nEnter bus name (example: 256) to generate SVG, or Q to exit: ";
+
+        string bus_name;
+        getline(cin >> ws, bus_name);  // важно: getline, чтобы работали имена с пробелами
+
+        if (bus_name == "Q" || bus_name == "q") {
+            cout << "Bye!\n";
+            break;
+        }
+
+        const Bus* bus = catalogue.FindBus(bus_name);
+        if (!bus) {
+            cout << "Bus " << bus_name << ": not found\n";
+            continue;
+        }
+
+        // Генерим SVG в файл
+        const string filename = "bus_" + MakeSafeFilename(bus->name) + ".svg";
+        ofstream out(filename);
+        out << RenderBusSvg(*bus);
+        out.close();
+
+        cout << "SVG saved to: " << filename << "\n";
+        cout << "Open it with a browser (double click in Explorer).\n";
+    }
+#endif
+
+    return 0;
 }
