@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="800.000000" height="600.000000">
+  <rect x="0" y="0" width="800.000000" height="600.000000" fill="white" />
+  <line x1="468.500250" y1="120.000000" x2="226.894672" y2="533.825582" stroke="black" stroke-width="3.000000" stroke-linecap="round" stroke-linejoin="round" />
+  <text x="285.578874" y="457.110791" font-size="18" font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif">👇</text>
+  <text x="373.575211" y="258.788628" font-size="18" font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif">🚌</text>
+  <line x1="226.894672" y1="533.825582" x2="50.000000" y2="133.349106" stroke="black" stroke-width="3.000000" stroke-linecap="round" stroke-linejoin="round" />
+  <text x="74.402087" y="218.292990" font-size="18" font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif">👆</text>
+  <text x="175.958384" y="388.810226" font-size="18" font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif">🚌</text>
+  <line x1="50.000000" y1="133.349106" x2="589.528832" y2="550.000000" stroke="black" stroke-width="3.000000" stroke-linecap="round" stroke-linejoin="round" />
+  <text x="488.957595" y="457.172206" font-size="18" font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif">👉</text>
+  <text x="231.500563" y="288.674534" font-size="18" font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif">🚌</text>
+  <line x1="589.528832" y1="550.000000" x2="468.500250" y2="120.000000" stroke="black" stroke-width="3.000000" stroke-linecap="round" stroke-linejoin="round" />
+  <text x="481.154793" y="209.251214" font-size="18" font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif">👆</text>
+  <text x="558.720002" y="396.248786" font-size="18" font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif">🚌</text>
+  <circle cx="589.528832" cy="550.000000" r="6.000000" fill="yellow" stroke="black" stroke-width="2.000000" />
+  <text x="599.528832" y="556.000000" font-size="16" font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif">🚏</text>
+  <text x="619.528832" y="540.000000" font-size="14" font-family="Verdana" fill="black">KZ8</text>
+  <circle cx="50.000000" cy="133.349106" r="6.000000" fill="yellow" stroke="black" stroke-width="2.000000" />
+  <text x="60.000000" y="139.349106" font-size="16" font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif">🚏</text>
+  <text x="80.000000" y="123.349106" font-size="14" font-family="Verdana" fill="black">aXYObzMStKKrHU4O</text>
+  <circle cx="226.894672" cy="533.825582" r="6.000000" fill="yellow" stroke="black" stroke-width="2.000000" />
+  <text x="236.894672" y="539.825582" font-size="16" font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif">🚏</text>
+  <text x="256.894672" y="523.825582" font-size="14" font-family="Verdana" fill="black">WGlidYF</text>
+  <circle cx="468.500250" cy="120.000000" r="6.000000" fill="yellow" stroke="black" stroke-width="2.000000" />
+  <text x="478.500250" y="126.000000" font-size="16" font-family="Segoe UI Emoji, Apple Color Emoji, Noto Color Emoji, sans-serif">🚏</text>
+  <text x="498.500250" y="110.000000" font-size="14" font-family="Verdana" fill="black">1GzQO9dYIm0me</text>
+  <text x="50.000000" y="30" font-size="22" font-family="Verdana" fill="black">Bus: mv8K1Jr6O1FJPRfl</text>
+</svg>
