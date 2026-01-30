@@ -302,13 +302,13 @@ namespace transport_catalogue::render {
 
 ---
 
-### 📦 Сборка (обычный режим)
+### 📦 Сборка (обычный режим) -> (!) chcp 65001 (!)
 
 > Без визуализации, только текстовые ответы на запросы
 
 ```
-g++ -std=c++17 -O2 -Wall -Wextra -pedantic \
-  main.cpp transport_catalogue.cpp input_reader.cpp stat_reader.cpp \
+g++ -std=c++17 -O2 -Wall -Wextra -pedantic ^
+  main.cpp transport_catalogue.cpp input_reader.cpp stat_reader.cpp ^
   -o transport_catalogue.exe
 ```
 
@@ -333,10 +333,10 @@ transport_catalogue.exe < input.txt > output.txt
 
 > Включает визуализацию маршрутов и остановок
 
-```bash
-g++ -std=c++17 -O2 -Wall -Wextra -pedantic \
-  -DINTERACTIVE \
-  main.cpp transport_catalogue.cpp input_reader.cpp stat_reader.cpp map_renderer.cpp \
+```
+g++ -std=c++17 -O2 -Wall -Wextra -pedantic ^
+  -DINTERACTIVE ^
+  main.cpp transport_catalogue.cpp input_reader.cpp stat_reader.cpp map_renderer.cpp ^
   -o transport_catalogue.exe
 ```
 
