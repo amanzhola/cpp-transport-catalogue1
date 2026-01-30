@@ -1,34 +1,45 @@
+// transport_catalogue.cpp
 #include "transport_catalogue.h"
 
+#include <string>
 #include <unordered_set>
+#include <cassert> 
 
-#include "geo.h"
-
-namespace tc::catalogue {
-
-void TransportCatalogue::AddStop(std::string name, tc::geo::Coordinates coord) {
+void TransportCatalogue::AddStop(std::string name, Coordinates coord) {
     stops_.push_back(Stop{std::move(name), coord});
-    const Stop* ptr = &stops_.back();
-    stop_by_name_[ptr->name] = ptr;
+    const Stop* p = &stops_.back();
+    stop_by_name_[p->name] = p;
 }
 
-void TransportCatalogue::AddBus(std::string name,
-                               const std::vector<std::string_view>& stop_names,
-                               bool is_roundtrip) {
+void TransportCatalogue::AddBus(std::string name, const std::vector<std::string_view>& stop_names) {
     buses_.push_back(Bus{});
-    Bus& bus = buses_.back();
-    bus.name = std::move(name);
-    bus.is_roundtrip = is_roundtrip;
-
-    bus.stops.reserve(stop_names.size());
-    for (std::string_view stop_name : stop_names) {
-        const Stop* stop_ptr = FindStop(stop_name);
-        if (stop_ptr) {
-            bus.stops.push_back(stop_ptr);
+    Bus& b = buses_.back();
+    b.name = std::move(name);
+    b.stops.reserve(stop_names.size());
+    for (std::string_view sv : stop_names) {
+        if (const Stop* s = FindStop(sv)) {
+	    assert(s != nullptr && "Stop not found while adding bus (input should be valid)");
+            b.stops.push_back(s);
         }
     }
+    bus_by_name_[b.name] = &b;
+    
+    // для списка SVG
+    bus_by_name_[b.name] = &b;
+    bus_order_.push_back(&b);
+}
 
-    bus_by_name_[bus.name] = &bus;
+// для списка SVG
+const std::vector<const Bus*>& TransportCatalogue::GetAllBuses() const {
+    return bus_order_;
+}
+
+// для списка SVG
+const Bus* TransportCatalogue::GetBusByIndex(std::size_t index) const {
+    if (index == 0 || index > bus_order_.size()) {
+        return nullptr;
+    }
+    return bus_order_[index - 1];
 }
 
 const Stop* TransportCatalogue::FindStop(std::string_view name) const {
@@ -49,51 +60,26 @@ BusStat TransportCatalogue::GetBusStat(std::string_view bus_name) const {
     BusStat res;
     const Bus* bus = FindBus(bus_name);
     if (!bus) {
-        return res;
+        return res; // found=false
     }
 
     res.found = true;
+    res.stops_count = bus->stops.size();
 
-    // U
+    // уникальные остановки
     std::unordered_set<const Stop*> uniq;
     uniq.reserve(bus->stops.size());
-    for (const Stop* s : bus->stops) uniq.insert(s);
+    for (const Stop* s : bus->stops) {
+        uniq.insert(s);
+    }
     res.unique_stops = uniq.size();
 
-    const size_t n = bus->stops.size();
-    if (n == 0) {
-        return res;
+    // длина маршрута (сумма соседних расстояний)
+    double length = 0.0;
+    for (std::size_t i = 1; i < bus->stops.size(); ++i) {
+        length += ComputeDistance(bus->stops[i - 1]->coord, bus->stops[i]->coord);
     }
-
-    if (bus->is_roundtrip) {
-        // Кольцо: если во входе "A > ... > A", то R = n
-        res.stops_count = n;
-
-        double length = 0.0;
-        for (size_t i = 1; i < n; ++i) {
-            length += tc::geo::ComputeDistance(bus->stops[i - 1]->coord,
-                                               bus->stops[i]->coord);
-        }
-        res.route_length = length;
-    } else {
-        // Некольцевой: хранится A-B-C (n), но реальный путь A..C..A => R = 2*n - 1
-        res.stops_count = 2 * n - 1;
-
-        double length = 0.0;
-        // туда
-        for (size_t i = 1; i < n; ++i) {
-            length += tc::geo::ComputeDistance(bus->stops[i - 1]->coord,
-                                               bus->stops[i]->coord);
-        }
-        // обратно (без underflow)
-        for (size_t i = n; i-- > 1; ) { // i: n-1 ... 1
-            length += tc::geo::ComputeDistance(bus->stops[i]->coord,
-                                               bus->stops[i - 1]->coord);
-        }
-        res.route_length = length;
-    }
+    res.route_length = length;
 
     return res;
 }
-
-}  // namespace tc::catalogue
