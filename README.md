@@ -1,3 +1,4 @@
+C++ • SVG Rendering • Transport Maps • Geographic Projection
 # 🚌 Transport Catalogue — SVG Renderer
 
 > Учебный проект: транспортный справочник с визуализацией маршрутов и остановок в SVG
